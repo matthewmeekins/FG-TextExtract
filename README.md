@@ -1,6 +1,6 @@
 # Text Extraction Project
 
-A Python application for processing 17,000+ text files and extracting structured data into CSV format.
+A Python application for processing .txt files and extracting structured data into CSV format.
 
 ## Features
 
