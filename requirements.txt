@@ -1,0 +1,25 @@
+"""
+Requirements file for the Text Extraction project.
+Install with: pip install -r requirements.txt
+"""
+
+# Core data processing
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Date parsing
+python-dateutil>=2.8.0
+
+# Progress tracking
+tqdm>=4.64.0
+
+# Text processing (optional, for advanced features)
+regex>=2022.3.0
+
+# File handling
+pathlib2>=2.3.0; python_version < "3.4"
+
+# Development dependencies (optional)
+pytest>=7.0.0
+black>=22.0.0
+flake8>=4.0.0

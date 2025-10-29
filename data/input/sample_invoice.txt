@@ -1,0 +1,31 @@
+# Sample text file for testing the extraction system
+
+ACME Corporation
+123 Business Street
+City, State 12345
+
+INVOICE
+
+Invoice Number: INV-2024-001234
+Invoice Date: March 15, 2024
+Due Date: April 15, 2024
+Order Date: March 10, 2024
+
+Bill To:
+Customer Company Inc.
+456 Customer Ave
+Another City, State 67890
+
+Description                 Qty    Price      Total
+Widget A                    10     $25.00     $250.00
+Widget B                    5      $50.00     $250.00
+Professional Services       2      $100.00    $200.00
+
+                           Subtotal:   $700.00
+                           Tax (8%):   $56.00
+                           Total:      $756.00
+
+Payment Terms: Net 30
+Ship Date: March 12, 2024
+
+Thank you for your business!
