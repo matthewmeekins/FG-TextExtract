@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Extraction Service</title>
+    <link rel="stylesheet" href="/bootstrap.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="fg-header">
+        <div class="container">
+            <nav class="fg-navbar">
+                <div class="fg-contact">
+                    Fellowship Greenville - For assistance, email: <a href="mailto:mmeekins@fellowshipgreenville.org">mmeekins@fellowshipgreenville.org</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="fg-main">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="fg-page-header">
+                <h1><span class="icon icon-file"></span> Text Extraction Service</h1>
+                <p class="subtitle">Upload ZIP files containing .txt files or select individual .txt files to extract structured data into CSV format</p>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="fg-section">
+                <div class="fg-section-header">
+                    <div class="fg-section-icon">
+                        <span class="icon icon-upload"></span>
+                    </div>
+                    <h2 class="fg-section-title">File Upload</h2>
+                </div>
+
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="fg-upload-area" id="uploadArea">
+                        <input type="file" id="fileInput" name="files" accept=".zip,.txt" multiple style="display: none;">
+                        <div class="fg-upload-icon">
+                            <span class="icon icon-upload"></span>
+                        </div>
+                        <p class="fg-upload-text">Click to select files or drag and drop</p>
+                        <p class="fg-upload-subtext">Accepted: ZIP files or multiple TXT files</p>
+                        <p class="fg-upload-subtext">Maximum file size: 500MB</p>
+                    </div>
+                    
+                    <div id="fileList" class="fg-file-list"></div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <span class="icon icon-processing"></span> Process Files
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Progress Section -->
+            <div id="progress" class="fg-progress">
+                <div class="fg-progress-text">
+                    <div class="fg-progress-spinner"></div>
+                    Processing your files...
+                </div>
+                <div class="fg-progress-bar">
+                    <div class="fg-progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="result"></div>
+        </div>
+    </main>
+            
+            <script>
+                let selectedFiles = [];
+                
+                function formatFileSize(bytes) {
+                    if (bytes < 1024) {
+                        return bytes + ' B';
+                    } else if (bytes < 1024 * 1024) {
+                        return (bytes / 1024).toFixed(1) + ' KB';
+                    } else {
+                        return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+                    }
+                }
+                
+                function updateFileList() {
+                    const fileList = document.getElementById('fileList');
+                    const submitBtn = document.querySelector('button[type="submit"]');
+                    const uploadArea = document.querySelector('.fg-upload-area');
+                    
+                    if (selectedFiles.length === 0) {
+                        fileList.innerHTML = '';
+                        submitBtn.disabled = true;
+                        uploadArea.innerHTML = `
+                            <div class="fg-upload-icon">
+                                <span class="icon icon-upload"></span>
+                            </div>
+                            <p class="fg-upload-text">Click to select files or drag and drop</p>
+                            <p class="fg-upload-subtext">Accepted: ZIP files or multiple TXT files</p>
+                            <p class="fg-upload-subtext">Maximum file size: 500MB</p>
+                        `;
+                        return;
+                    }
+                    
+                    submitBtn.disabled = false;
+                    uploadArea.innerHTML = `
+                        <div class="fg-upload-icon">
+                            <span class="icon icon-check"></span>
+                        </div>
+                        <p class="fg-upload-text">Files selected - click here to select different files</p>
+                    `;
+                    
+                    fileList.innerHTML = selectedFiles.map((file, index) => 
+                        `<div class="fg-file-item">
+                            <div class="fg-file-info">
+                                <div class="fg-file-icon">
+                                    <span class="icon icon-file"></span>
+                                </div>
+                                <div>
+                                    <div class="fg-file-name">${file.name}</div>
+                                    <div class="fg-file-size">${formatFileSize(file.size)}</div>
+                                </div>
+                            </div>
+                            <button type="button" class="fg-file-remove" onclick="removeFile(${index})">Remove</button>
+                        </div>`
+                    ).join('');
+                }
+                
+                function removeFile(index) {
+                    selectedFiles.splice(index, 1);
+                    updateFileList();
+                }
+                
+                document.getElementById('uploadForm').onsubmit = async function(e) {
+                    e.preventDefault();
+                    
+                    const progressDiv = document.getElementById('progress');
+                    const resultDiv = document.getElementById('result');
+                    
+                    if (selectedFiles.length === 0) {
+                        alert('Please select files to process');
+                        return;
+                    }
+                    
+                    progressDiv.classList.add('show');
+                    resultDiv.innerHTML = '';
+                    
+                    const formData = new FormData();
+                    selectedFiles.forEach(file => {
+                        formData.append('files', file);
+                    });
+                    
+                    try {
+                        const response = await fetch('/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'extracted_data.csv';
+                            a.click();
+                            
+                            resultDiv.innerHTML = `
+                                <div class="fg-alert fg-alert-success">
+                                    <span class="icon icon-check"></span> Processing complete! CSV file downloaded.
+                                </div>
+                            `;
+                        } else {
+                            const error = await response.text();
+                            resultDiv.innerHTML = `
+                                <div class="fg-alert fg-alert-error">
+                                    <span class="icon icon-error"></span> Error: ${error}
+                                </div>
+                            `;
+                        }
+                    } catch (error) {
+                        resultDiv.innerHTML = `
+                            <div class="fg-alert fg-alert-error">
+                                <span class="icon icon-error"></span> Error: ${error.message}
+                            </div>
+                        `;
+                    }
+                    
+                    progressDiv.classList.remove('show');
+                };
+                
+                // Handle drag and drop
+                const uploadArea = document.getElementById('uploadArea');
+                const fileInput = document.getElementById('fileInput');
+                
+                // Add click handler
+                uploadArea.onclick = function() {
+                    fileInput.click();
+                };
+                
+                uploadArea.ondragover = (e) => { 
+                    e.preventDefault(); 
+                    uploadArea.classList.add('active');
+                };
+                uploadArea.ondragleave = () => { 
+                    uploadArea.classList.remove('active');
+                };
+                uploadArea.ondrop = (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('active');
+                    if (e.dataTransfer.files.length > 0) {
+                        selectedFiles = Array.from(e.dataTransfer.files);
+                        updateFileList();
+                    }
+                };
+                
+                fileInput.onchange = function() {
+                    if (this.files.length > 0) {
+                        selectedFiles = Array.from(this.files);
+                        updateFileList();
+                    }
+                };
+                
+                // Initialize
+                updateFileList();
+            </script>
+        </body>
+        </html>
