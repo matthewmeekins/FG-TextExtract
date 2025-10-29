@@ -1,0 +1,25 @@
+{
+  "name": "fg-textextract",
+  "version": "1.0.0",
+  "description": "A Python application for processing .txt files and extracting structured data into CSV format.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthewmeekins/FG-TextExtract.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/matthewmeekins/FG-TextExtract/issues"
+  },
+  "homepage": "https://github.com/matthewmeekins/FG-TextExtract#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "unzipper": "^0.12.3"
+  }
+}

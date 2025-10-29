@@ -189,11 +189,28 @@ class TextProcessor:
 
 def main():
     """Main entry point."""
-    config = Config()
-    processor = TextProcessor(config)
+    import argparse
     
-    input_dir = Path(config.input_directory)
-    output_file = Path(config.output_file)
+    parser = argparse.ArgumentParser(description='Extract structured data from text files')
+    parser.add_argument('--input', type=str, help='Input directory containing .txt files')
+    parser.add_argument('--output', type=str, help='Output CSV file path')
+    
+    args = parser.parse_args()
+    
+    # Use command line args if provided, otherwise fall back to config defaults
+    config = Config()
+    
+    if args.input:
+        input_dir = Path(args.input)
+    else:
+        input_dir = Path(config.input_directory)
+        
+    if args.output:
+        output_file = Path(args.output)
+    else:
+        output_file = Path(config.output_file)
+    
+    processor = TextProcessor(config)
     
     if not input_dir.exists():
         print(f"Error: Input directory {input_dir} does not exist")
