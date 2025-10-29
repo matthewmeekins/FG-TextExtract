@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text Extraction Service</title>
-    <link rel="stylesheet" href="/bootstrap.css">
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <!-- Header -->
-    <header class="fg-header">
+    <header class="header">
         <div class="container">
-            <nav class="fg-navbar">
-                <div class="fg-contact">
+            <nav class="navbar">
+                <div class="contact">
                     Fellowship Greenville - For assistance, email: <a href="mailto:mmeekins@fellowshipgreenville.org">mmeekins@fellowshipgreenville.org</a>
                 </div>
             </nav>
@@ -20,35 +20,37 @@
     </header>
 
     <!-- Main Content -->
-    <main class="fg-main">
-        <div class="container">
-            <!-- Page Header -->
-            <div class="fg-page-header">
+    <main class="main">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="container">
                 <h1><span class="icon icon-file"></span> Text Extraction Service</h1>
                 <p class="subtitle">Upload ZIP files containing .txt files or select individual .txt files to extract structured data into CSV format</p>
             </div>
+        </div>
 
+        <div class="container content">
             <!-- Upload Section -->
-            <div class="fg-section">
-                <div class="fg-section-header">
-                    <div class="fg-section-icon">
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-icon">
                         <span class="icon icon-upload"></span>
                     </div>
-                    <h2 class="fg-section-title">File Upload</h2>
+                    <h2 class="section-title">File Upload</h2>
                 </div>
 
                 <form id="uploadForm" enctype="multipart/form-data">
-                    <div class="fg-upload-area" id="uploadArea">
+                    <div class="upload-area" id="uploadArea">
                         <input type="file" id="fileInput" name="files" accept=".zip,.txt" multiple style="display: none;">
-                        <div class="fg-upload-icon">
+                        <div class="upload-icon">
                             <span class="icon icon-upload"></span>
                         </div>
-                        <p class="fg-upload-text">Click to select files or drag and drop</p>
-                        <p class="fg-upload-subtext">Accepted: ZIP files or multiple TXT files</p>
-                        <p class="fg-upload-subtext">Maximum file size: 500MB</p>
+                        <p class="upload-text">Click to select files or drag and drop</p>
+                        <p class="upload-subtext">Accepted: ZIP files or multiple TXT files</p>
+                        <p class="upload-subtext">Maximum file size: 500MB</p>
                     </div>
                     
-                    <div id="fileList" class="fg-file-list"></div>
+                    <div id="fileList" class="file-list"></div>
                     
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary btn-lg">
@@ -59,13 +61,13 @@
             </div>
 
             <!-- Progress Section -->
-            <div id="progress" class="fg-progress">
-                <div class="fg-progress-text">
-                    <div class="fg-progress-spinner"></div>
+            <div id="progress" class="progress">
+                <div class="progress-text">
+                    <div class="progress-spinner"></div>
                     Processing your files...
                 </div>
-                <div class="fg-progress-bar">
-                    <div class="fg-progress-fill" id="progressFill"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
                 </div>
             </div>
 
@@ -90,42 +92,41 @@
                 function updateFileList() {
                     const fileList = document.getElementById('fileList');
                     const submitBtn = document.querySelector('button[type="submit"]');
-                    const uploadArea = document.querySelector('.fg-upload-area');
+                    const uploadArea = document.querySelector('.upload-area');
                     
                     if (selectedFiles.length === 0) {
                         fileList.innerHTML = '';
                         submitBtn.disabled = true;
                         uploadArea.innerHTML = `
-                            <div class="fg-upload-icon">
+                            <div class="upload-icon">
                                 <span class="icon icon-upload"></span>
                             </div>
-                            <p class="fg-upload-text">Click to select files or drag and drop</p>
-                            <p class="fg-upload-subtext">Accepted: ZIP files or multiple TXT files</p>
-                            <p class="fg-upload-subtext">Maximum file size: 500MB</p>
+                            <p class="upload-text">Click to select files or drag and drop</p>
+                            <p class="upload-subtext">Accepted: ZIP files or multiple TXT files</p>
+                            <p class="upload-subtext">Maximum file size: 500MB</p>
                         `;
                         return;
                     }
                     
                     submitBtn.disabled = false;
                     uploadArea.innerHTML = `
-                        <div class="fg-upload-icon">
+                        <div class="upload-icon">
                             <span class="icon icon-check"></span>
                         </div>
-                        <p class="fg-upload-text">Files selected - click here to select different files</p>
+                        <p class="upload-text">Files selected - click here to select different files</p>
                     `;
                     
                     fileList.innerHTML = selectedFiles.map((file, index) => 
-                        `<div class="fg-file-item">
-                            <div class="fg-file-info">
-                                <div class="fg-file-icon">
+                        `<div class="file-item">
+                            <div class="file-info">
+                                <div class="file-icon">
                                     <span class="icon icon-file"></span>
                                 </div>
                                 <div>
-                                    <div class="fg-file-name">${file.name}</div>
-                                    <div class="fg-file-size">${formatFileSize(file.size)}</div>
+                                    <div class="file-name">${file.name} <span class="file-size">(${formatFileSize(file.size)})</span></div>
                                 </div>
                             </div>
-                            <button type="button" class="fg-file-remove" onclick="removeFile(${index})">Remove</button>
+                            <button type="button" class="file-remove" onclick="removeFile(${index})">×</button>
                         </div>`
                     ).join('');
                 }
@@ -169,21 +170,21 @@
                             a.click();
                             
                             resultDiv.innerHTML = `
-                                <div class="fg-alert fg-alert-success">
+                                <div class="alert alert-success">
                                     <span class="icon icon-check"></span> Processing complete! CSV file downloaded.
                                 </div>
                             `;
                         } else {
                             const error = await response.text();
                             resultDiv.innerHTML = `
-                                <div class="fg-alert fg-alert-error">
+                                <div class="alert alert-error">
                                     <span class="icon icon-error"></span> Error: ${error}
                                 </div>
                             `;
                         }
                     } catch (error) {
                         resultDiv.innerHTML = `
-                            <div class="fg-alert fg-alert-error">
+                            <div class="alert alert-error">
                                 <span class="icon icon-error"></span> Error: ${error.message}
                             </div>
                         `;
