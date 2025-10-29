@@ -1,7 +1,5 @@
-"""
-Requirements file for the Text Extraction project.
-Install with: pip install -r requirements.txt
-"""
+# Requirements file for the Text Extraction project.
+# Install with: pip install -r requirements.txt
 
 # Core data processing
 pandas>=1.5.0
