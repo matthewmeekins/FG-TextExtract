@@ -46,11 +46,11 @@ class TextProcessor:
             # Read file content
             text_content = read_text_file(file_path)
             if not text_content:
-                return self._create_empty_result(file_path.name, "Empty file")
+                return self._create_empty_result(file_path.stem, "Empty file")
             
             # Extract data
             result = {
-                'filename': file_path.name,
+                'filename': file_path.stem,  # Remove file extension
                 'text_excerpt': self._create_text_excerpt(text_content),
             }
             
