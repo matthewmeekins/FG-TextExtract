@@ -1,15 +1,13 @@
 """
 Text Extraction and Processing Tool
 
-This script processes 17,000 .txt files and extracts structured data into CSV format.
+This script processes .txt files and extracts structured data into CSV format.
 It extracts dates, vendor names, invoice numbers, currency amounts, and text excerpts.
 """
 
-import os
-import csv
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any
 import pandas as pd
 from tqdm import tqdm
 
@@ -17,7 +15,7 @@ from src.extractors.date_extractor import DateExtractor
 from src.extractors.vendor_extractor import VendorExtractor
 from src.extractors.invoice_extractor import InvoiceExtractor
 from src.extractors.currency_extractor import CurrencyExtractor
-from src.utils.file_utils import read_text_file, validate_file
+from src.utils.file_utils import read_text_file
 from src.config import Config
 
 
@@ -108,14 +106,14 @@ class TextProcessor:
     def _format_dates(self, dates: List[Dict[str, Any]]) -> Dict[str, Any]:
         """Format extracted dates into CSV columns."""
         result = {
-            'date_primary_yyyymmdd': '',
-            'date1_yyyymmdd': '',
+            'date_primary_mmddyyyy': '',
+            'date1_mmddyyyy': '',
             'date1_label': '',
             'date1_snippet': '',
-            'date2_yyyymmdd': '',
+            'date2_mmddyyyy': '',
             'date2_label': '',
             'date2_snippet': '',
-            'date3_yyyymmdd': '',
+            'date3_mmddyyyy': '',
             'date3_label': '',
             'date3_snippet': '',
             'date_count': len(dates)
@@ -130,12 +128,12 @@ class TextProcessor:
         
         # Set primary date
         if sorted_dates:
-            result['date_primary_yyyymmdd'] = sorted_dates[0].get('formatted_date', '')
+            result['date_primary_mmddyyyy'] = sorted_dates[0].get('formatted_date', '')
         
         # Set up to 3 dates
         for i, date_info in enumerate(sorted_dates[:3]):
             idx = i + 1
-            result[f'date{idx}_yyyymmdd'] = date_info.get('formatted_date', '')
+            result[f'date{idx}_mmddyyyy'] = date_info.get('formatted_date', '')
             result[f'date{idx}_label'] = date_info.get('label', '')
             result[f'date{idx}_snippet'] = date_info.get('snippet', '')
         
@@ -146,14 +144,14 @@ class TextProcessor:
         return {
             'filename': filename,
             'text_excerpt': '',
-            'date_primary_yyyymmdd': '',
-            'date1_yyyymmdd': '',
+            'date_primary_mmddyyyy': '',
+            'date1_mmddyyyy': '',
             'date1_label': '',
             'date1_snippet': '',
-            'date2_yyyymmdd': '',
+            'date2_mmddyyyy': '',
             'date2_label': '',
             'date2_snippet': '',
-            'date3_yyyymmdd': '',
+            'date3_mmddyyyy': '',
             'date3_label': '',
             'date3_snippet': '',
             'date_count': 0,
@@ -175,10 +173,10 @@ class TextProcessor:
         
         # Define column order
         columns = [
-            'filename', 'text_excerpt', 'date_primary_yyyymmdd',
-            'date1_yyyymmdd', 'date1_label', 'date1_snippet',
-            'date2_yyyymmdd', 'date2_label', 'date2_snippet',
-            'date3_yyyymmdd', 'date3_label', 'date3_snippet',
+            'filename', 'text_excerpt', 'date_primary_mmddyyyy',
+            'date1_mmddyyyy', 'date1_label', 'date1_snippet',
+            'date2_mmddyyyy', 'date2_label', 'date2_snippet',
+            'date3_mmddyyyy', 'date3_label', 'date3_snippet',
             'date_count', 'possible_vendor', 'invoice_no',
             'total', 'other_amounts', 'errors'
         ]

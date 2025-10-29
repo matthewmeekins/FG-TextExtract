@@ -58,7 +58,7 @@ class DateExtractor:
                     if parsed_date:
                         dates.append({
                             'raw_date': date_str,
-                            'formatted_date': parsed_date.strftime('%Y%m%d'),
+                            'formatted_date': parsed_date.strftime('%m/%d/%Y'),
                             'label': label,
                             'snippet': self._get_context_snippet(text, match.start(), match.end()),
                             'confidence': 'high'
@@ -78,7 +78,7 @@ class DateExtractor:
                     if parsed_date:
                         dates.append({
                             'raw_date': date_str,
-                            'formatted_date': parsed_date.strftime('%Y%m%d'),
+                            'formatted_date': parsed_date.strftime('%m/%d/%Y'),
                             'label': 'unknown',
                             'snippet': self._get_context_snippet(text, match.start(), match.end()),
                             'confidence': 'medium'
