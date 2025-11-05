@@ -112,21 +112,31 @@ app.post('/upload', upload.array('files'), async (req, res) => {
         
         // Call Python script
         await new Promise((resolve, reject) => {
-            const pythonPath = path.join(__dirname, 'venv', 'bin', 'python');
             const scriptPath = path.join(__dirname, 'main.py');
             
-            const python = spawn(pythonPath, [scriptPath, '--input', extractDir, '--output', outputFile]);
-            
-            python.on('close', (code) => {
-                if (code === 0) {
-                    resolve();
-                } else {
-                    reject(new Error(`Python script exited with code ${code}`));
-                }
-            });
-            
-            python.on('error', reject);
-        });
+            // Allow override via env (useful when bundling a python binary with Electron)
+            // Priority: process.env.PYTHON_EXEC -> venv (unix/windows) -> python3 on PATH
+            let pythonExec = process.env.PYTHON_EXEC || null;
+            const venvUnix = path.join(__dirname, 'venv', 'bin', 'python');
+            const venvWin = path.join(__dirname, 'venv', 'Scripts', 'python.exe');
+            if (!pythonExec) {
+                if (fs.existsSync(venvUnix)) pythonExec = venvUnix;
+                else if (fs.existsSync(venvWin)) pythonExec = venvWin;
+                else pythonExec = 'python3';
+            }
+
+            const python = spawn(pythonExec, [scriptPath, '--input', extractDir, '--output', outputFile], { stdio: 'inherit' });
+             
+             python.on('close', (code) => {
+                 if (code === 0) {
+                     resolve();
+                 } else {
+                     reject(new Error(`Python script exited with code ${code}`));
+                 }
+             });
+             
+             python.on('error', reject);
+         });
         
         // Send CSV file back
         res.download(outputFile, 'extracted_data.csv', (err) => {
